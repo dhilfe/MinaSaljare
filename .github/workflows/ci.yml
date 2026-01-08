@@ -5,6 +5,10 @@ on:
     branches:
       - stage
       - main
+  merge_group:
+    branches:
+      - stage
+      - main
   workflow_dispatch: {}
 
 jobs:
