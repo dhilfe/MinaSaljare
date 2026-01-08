@@ -1,6 +1,6 @@
 # MinaSäljare
 
-Sales tracking app for a single youth team (guardians + coach), with support for multiple campaigns and yearly statistics.
+Sales  tracking app for a single youth team (guardians + coach), with support for multiple campaigns and yearly statistics.
 
 ## Backend (Django + DRF) – Local setup (SQLite)
 
