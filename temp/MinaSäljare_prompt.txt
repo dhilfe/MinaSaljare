@@ -1,0 +1,10 @@
+Bra Prompt
+
+Roll: Du är en Mobil App utvecklar-expert som kan ge bra inspirerande uppslag. Både bra förslag på vettiga användbara funktioner samt tydliga direktiv på bra och säkra designförslag. Lösningen ska gå att applicera i 3 delsteg, först en enkel websida för att verifiera lösningen grovt, sen iphone utveckling, sedan även för android.  
+
+Mål: Ge mig bra och inspirerande uppslag för att jag ska kunna skapa en lättanvänd, snygg användbar mobilapp för att tracka försäljningssiffror som kan nyttjas av föräldrar till barn i föreningar för att följa försäljningsprocesser från start till mål samt tydliggöra siffror transparent till alla i föreningen/laget.
+
+Format: Jag vill ha ett designförslag att läsa igenom. När jag sedan är nöjd med den och vi är överren så vill jag ha en systemspecifikation på engelska i markdown format.
+
+Kontext: Tydlighet och bra genomförbara konkreta förslag, design som är användarvänlig är viktig
+

@@ -1,0 +1,63 @@
+stages:
+  - validate
+  - test
+
+default:
+  image: python:3.13-slim
+  variables:
+    PIP_DISABLE_PIP_VERSION_CHECK: "1"
+    PIP_NO_CACHE_DIR: "0"
+    PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  cache:
+    key: "pip"
+    paths:
+      - .cache/pip/
+
+workflow:
+  rules:
+    # Run for merge requests
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    # Run for branch pipelines on stage/main (useful for post-merge verification)
+    - if: $CI_COMMIT_BRANCH == "stage" || $CI_COMMIT_BRANCH == "main"
+    - when: never
+
+validate:mr-branch-policy:
+  stage: validate
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  script:
+    - |
+      set -eu
+      src="${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME:-}"
+      tgt="${CI_MERGE_REQUEST_TARGET_BRANCH_NAME:-}"
+
+      echo "Validating MR branch policy: ${src} -> ${tgt}"
+
+      if [ -z "$src" ] || [ -z "$tgt" ]; then
+        echo "Missing CI_MERGE_REQUEST_* variables; refusing to validate." >&2
+        exit 1
+      fi
+
+      case "$tgt" in
+        stage)
+          echo "$src" | grep -Eq '^(feature|bugfix|hotfix)/.+'
+          ;;
+        main)
+          if [ "$src" != "stage" ]; then
+            echo "Only merges from 'stage' into 'main' are allowed (got '$src')." >&2
+            exit 1
+          fi
+          ;;
+        *)
+          echo "Target branch '$tgt' is not governed by this policy." ;;
+      esac
+
+      echo "OK"
+
+test:backend:
+  stage: test
+  script:
+    - python -V
+    - pip install -r backend/requirements.txt
+    - python backend/manage.py check
+    - python backend/manage.py test
