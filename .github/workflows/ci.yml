@@ -1,6 +1,63 @@
 name: CI
 
 on:
+  pull_request:
+    branches:
+      - stage
+      - main
+  push:
+    branches:
+      - stage
+      - main
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enforce branch policy (PR only)
+        if: ${{ github.event_name == 'pull_request' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          src='${{ github.head_ref }}'
+          tgt='${{ github.base_ref }}'
+          echo "Validating PR branch policy: ${src} -> ${tgt}"
+
+          if [[ "$tgt" == "stage" ]]; then
+            if [[ ! "$src" =~ ^(feature|bugfix|hotfix)/.+$ ]]; then
+              echo "Only feature/..., bugfix/..., hotfix/... may merge into stage (got '$src')." >&2
+              exit 1
+            fi
+          elif [[ "$tgt" == "main" ]]; then
+            if [[ "$src" != "stage" ]]; then
+              echo "Only stage may merge into main (got '$src')." >&2
+              exit 1
+            fi
+          fi
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+      - name: Django checks
+        run: |
+          python backend/manage.py check
+
+      - name: Django tests
+        run: |
+          python backend/manage.py test
+name: CI
+
 on:
   pull_request:
     branches:
