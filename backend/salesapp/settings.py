@@ -28,6 +28,13 @@ DEBUG = os.environ.get('DJANGO_DEBUG', '1') in {'1', 'true', 'True', 'yes', 'YES
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
+# Django CSRF origin protection.
+# When serving the admin behind a reverse proxy (e.g. nginx on a non-default port),
+# you must explicitly trust the external origin(s), including scheme and port.
+# Example: CSRF_TRUSTED_ORIGINS=http://192.168.123.164:8080,http://pajen:8080
+_csrf_origins = os.environ.get('CSRF_TRUSTED_ORIGINS', '').strip()
+CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_origins.split(',') if o.strip()]
+
 
 # Application definition
 
