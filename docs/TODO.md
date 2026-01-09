@@ -230,7 +230,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Deploy full stack on Raspberry Pi
+	•	[x] Deploy full stack on Raspberry Pi
 Acceptance criteria:
 	•	Project repo is cloned onto the Raspberry Pi.
 	•	docker-compose up -d runs all services (db, backend, proxy, frontend).

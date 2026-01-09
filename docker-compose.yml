@@ -29,8 +29,6 @@ services:
       WEB_TIMEOUT: ${WEB_TIMEOUT:-60}
     depends_on:
       - db
-    ports:
-      - "8000:8000"
     networks:
       - minasaljare
     restart: unless-stopped
@@ -42,7 +40,7 @@ services:
     depends_on:
       - backend
     ports:
-      - "8080:80"
+      - "80:80"
     networks:
       - minasaljare
     restart: unless-stopped
