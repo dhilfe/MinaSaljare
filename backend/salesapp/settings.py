@@ -132,6 +132,17 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+# Password hashing
+# Use a strong password hasher by default (Argon2). Keep Django defaults as fallbacks
+# so existing hashes remain verifiable.
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+]
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 

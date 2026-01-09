@@ -1,6 +1,23 @@
 from django.urls import path
 
-from .views import health, login, me, team
+from .views import (
+    active_campaign,
+    campaign_export_csv,
+    campaign_products,
+    campaign_sales,
+    campaign_sales_my_children,
+    campaigns,
+    child_campaign_summary,
+    child_campaign_target,
+    children,
+    health,
+    login,
+    me,
+    product_detail,
+    sale_detail,
+    team_campaign_summary,
+    team,
+)
 
 
 urlpatterns = [
@@ -8,4 +25,16 @@ urlpatterns = [
     path('v1/auth/login/', login, name='login'),
     path('v1/me/', me, name='me'),
     path('v1/team/', team, name='team'),
+    path('v1/team/campaigns/<uuid:campaign_id>/summary/', team_campaign_summary, name='team-campaign-summary'),
+	path('v1/campaigns/', campaigns, name='campaigns'),
+	path('v1/campaigns/active/', active_campaign, name='active-campaign'),
+    path('v1/campaigns/<uuid:campaign_id>/export/csv', campaign_export_csv, name='campaign-export-csv'),
+    path('v1/campaigns/<uuid:campaign_id>/products/', campaign_products, name='campaign-products'),
+    path('v1/campaigns/<uuid:campaign_id>/sales/', campaign_sales, name='campaign-sales'),
+    path('v1/campaigns/<uuid:campaign_id>/sales/my-children/', campaign_sales_my_children, name='campaign-sales-my-children'),
+    path('v1/campaigns/<uuid:campaign_id>/children/<uuid:child_id>/target/', child_campaign_target, name='child-campaign-target'),
+    path('v1/children/<uuid:child_id>/campaigns/<uuid:campaign_id>/summary/', child_campaign_summary, name='child-campaign-summary'),
+    path('v1/sales/<uuid:sale_id>/', sale_detail, name='sale-detail'),
+    path('v1/products/<uuid:product_id>/', product_detail, name='product-detail'),
+	path('v1/children/', children, name='children'),
 ]
