@@ -221,7 +221,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Add reverse proxy (Caddy or Nginx) and serve frontend
+	•	[x] Add reverse proxy (Caddy or Nginx) and serve frontend
 Acceptance criteria:
 	•	A proxy service (Caddy or Nginx) is added to docker-compose.yml.
 	•	Proxy terminates HTTP/HTTPS and forwards /api/ to backend container.

@@ -36,13 +36,13 @@ services:
     restart: unless-stopped
 
   nginx:
-    profiles:
-      - edge
-    image: nginx:alpine
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
     depends_on:
       - backend
+    ports:
+      - "8080:80"
     networks:
       - minasaljare
     restart: unless-stopped
