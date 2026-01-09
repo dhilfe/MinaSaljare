@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'api/api_client.dart';
 import 'auth/token_storage.dart';
 import 'config/app_config.dart';
-import 'pages/home_page.dart';
+import 'pages/app_shell.dart';
 import 'pages/login_page.dart';
 
 void main() {
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(useMaterial3: true),
       routes: {
         '/login': (_) => LoginPage(api: apiClient, tokenStorage: store),
-        '/home': (_) => HomePage(api: apiClient, tokenStorage: store),
+        '/home': (_) => AppShell(api: apiClient, tokenStorage: store),
         '/health': (_) => const HealthPage(),
       },
       home: StartPage(tokenStorage: store),

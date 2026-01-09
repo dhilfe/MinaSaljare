@@ -6,17 +6,80 @@ import '../auth/token_storage.dart';
 import '../config/app_config.dart';
 
 class CampaignDto {
-  CampaignDto({required this.id, required this.name, required this.currency});
+  CampaignDto({
+    required this.id,
+    required this.name,
+    required this.currency,
+    this.endDate,
+  });
 
   final String id;
   final String name;
   final String currency;
+  final String? endDate;
 
   static CampaignDto fromJson(Map<String, dynamic> json) {
     return CampaignDto(
       id: json['id'] as String,
       name: json['name'] as String,
       currency: (json['currency'] as String?) ?? 'SEK',
+      endDate: json['end_date'] as String?,
+    );
+  }
+}
+
+class TeamChildSummaryDto {
+  TeamChildSummaryDto({
+    required this.id,
+    required this.name,
+    required this.targetUnits,
+    required this.totalUnitsSold,
+    required this.progressPercent,
+  });
+
+  final String id;
+  final String name;
+  final int targetUnits;
+  final int totalUnitsSold;
+  final double progressPercent;
+
+  static TeamChildSummaryDto fromJson(Map<String, dynamic> json) {
+    return TeamChildSummaryDto(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      targetUnits: json['target_units'] as int,
+      totalUnitsSold: json['total_units_sold'] as int,
+      progressPercent: double.tryParse(json['progress_percent'].toString()) ?? 0.0,
+    );
+  }
+}
+
+class TeamCampaignSummaryDto {
+  TeamCampaignSummaryDto({
+    required this.teamName,
+    required this.campaignName,
+    required this.children,
+    required this.teamTotalUnitsSold,
+    required this.teamTargetUnits,
+  });
+
+  final String teamName;
+  final String campaignName;
+  final List<TeamChildSummaryDto> children;
+  final int teamTotalUnitsSold;
+  final int teamTargetUnits;
+
+  static TeamCampaignSummaryDto fromJson(Map<String, dynamic> json) {
+    final team = json['team'] as Map<String, dynamic>;
+    final campaign = json['campaign'] as Map<String, dynamic>;
+    final childrenRaw = (json['children'] as List).whereType<Map<String, dynamic>>();
+
+    return TeamCampaignSummaryDto(
+      teamName: team['name'] as String,
+      campaignName: campaign['name'] as String,
+      children: childrenRaw.map(TeamChildSummaryDto.fromJson).toList(growable: false),
+      teamTotalUnitsSold: json['team_total_units_sold'] as int,
+      teamTargetUnits: json['team_target_units'] as int,
     );
   }
 }
@@ -85,16 +148,15 @@ class ChildCampaignSummaryDto {
       totalUnitsSold: json['total_units_sold'] as int,
       totalSalesAmount: json['total_sales_amount'].toString(),
       remainingUnitsToTarget: json['remaining_units_to_target'] as int,
-      progressPercent:
-          double.tryParse(json['progress_percent'].toString()) ?? 0.0,
+      progressPercent: double.tryParse(json['progress_percent'].toString()) ?? 0.0,
     );
   }
 }
 
 class ApiClient {
   ApiClient({http.Client? httpClient, AccessTokenStore? tokenStore})
-    : _httpClient = httpClient ?? http.Client(),
-      _tokenStore = tokenStore;
+      : _httpClient = httpClient ?? http.Client(),
+        _tokenStore = tokenStore;
 
   final http.Client _httpClient;
   final AccessTokenStore? _tokenStore;
@@ -140,6 +202,13 @@ class ApiClient {
   Future<CampaignDto> fetchActiveCampaign() async {
     final data = await _getJson('/v1/campaigns/active/');
     return CampaignDto.fromJson(data);
+  }
+
+  Future<TeamCampaignSummaryDto> fetchTeamCampaignSummary({
+    required String campaignId,
+  }) async {
+    final data = await _getJson('/v1/team/campaigns/$campaignId/summary/');
+    return TeamCampaignSummaryDto.fromJson(data);
   }
 
   Future<List<ChildDto>> fetchChildren() async {
@@ -219,12 +288,14 @@ class ApiClient {
   Future<Map<String, String>> _authHeaders({bool json = false}) async {
     final store = _tokenStore;
     if (store == null) {
-      throw Exception('Token store is not configured');
+      return json ? {'Content-Type': 'application/json'} : <String, String>{};
     }
+
     final token = await store.readAccessToken();
     if (token == null || token.isEmpty) {
-      throw Exception('Not authenticated');
+      return json ? {'Content-Type': 'application/json'} : <String, String>{};
     }
+
     final headers = <String, String>{'Authorization': 'Bearer $token'};
     if (json) headers['Content-Type'] = 'application/json';
     return headers;

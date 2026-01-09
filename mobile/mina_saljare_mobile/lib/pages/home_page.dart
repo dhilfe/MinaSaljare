@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../api/api_client.dart';
-import '../auth/token_storage.dart';
 import 'add_sale_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.api, required this.tokenStorage});
+  const HomePage({super.key, required this.api});
 
   final ApiClient api;
-  final AccessTokenStore tokenStorage;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -102,12 +100,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> _logout(BuildContext context) async {
-    await widget.tokenStorage.clear();
-    if (!context.mounted) return;
-    Navigator.of(context).pushReplacementNamed('/login');
-  }
-
   @override
   Widget build(BuildContext context) {
     final campaign = _campaign;
@@ -116,23 +108,14 @@ class _HomePageState extends State<HomePage> {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-        actions: [
-          TextButton(
-            onPressed: () => _logout(context),
-            child: const Text('Log out'),
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text('Home')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (campaign != null) Text('Campaign: ${campaign.name}'),
-            if (campaign == null && !_loading)
-              const Text('No active campaign.'),
+            if (campaign == null && !_loading) const Text('No active campaign.'),
             const SizedBox(height: 12),
             if (_children.isNotEmpty)
               DropdownButton<String>(
@@ -162,8 +145,7 @@ class _HomePageState extends State<HomePage> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed:
-                    (_loading || campaign == null || selectedChild == null)
+                onPressed: (_loading || campaign == null || selectedChild == null)
                     ? null
                     : () async {
                         final saved = await Navigator.of(context).push<bool>(
