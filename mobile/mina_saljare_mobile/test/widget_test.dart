@@ -9,16 +9,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mina_saljare_mobile/main.dart';
+import 'package:mina_saljare_mobile/auth/token_storage.dart';
 
 void main() {
-  testWidgets('Health screen renders', (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
+  testWidgets('App starts on login when no token', (WidgetTester tester) async {
+    await tester.pumpWidget(MyApp(tokenStorage: InMemoryTokenStorage()));
 
-    expect(find.text('Health Check'), findsOneWidget);
-    expect(find.textContaining('API base URL:'), findsOneWidget);
-    expect(find.widgetWithText(ElevatedButton, 'Refresh'), findsOneWidget);
+    // StartPage shows loading first, then redirects.
+    expect(find.text('Loading…'), findsOneWidget);
+    await tester.pumpAndSettle();
 
-    // No automatic network call should happen.
-    expect(find.text('Loading…'), findsNothing);
+    expect(find.byType(AppBar), findsOneWidget);
+    expect(find.widgetWithText(ElevatedButton, 'Log in'), findsOneWidget);
   });
 }
