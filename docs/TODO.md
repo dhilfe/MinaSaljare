@@ -203,7 +203,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Implement basic coach dashboard web view (optional, beyond Django Admin)
+	•	[x] Implement basic coach dashboard web view (optional, beyond Django Admin)
 Acceptance criteria:
 	•	A coach-only route (e.g. /coach/dashboard) is accessible based on role.
 	•	Dashboard shows team totals and per-child stats using team summary endpoint.
