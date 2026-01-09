@@ -44,7 +44,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Add Campaign model & active campaign endpoint
+	•	[x] Add Campaign model & active campaign endpoint
 Acceptance criteria:
 	•	Campaign model exists with fields from spec (team, name, dates, targets, buyout, currency, is_active, timestamps).
 	•	A coach can create a campaign via /api/v1/campaigns (authenticated).
@@ -53,7 +53,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Add Child & GuardianChildLink models and endpoints
+	•	[x] Add Child & GuardianChildLink models and endpoints
 Acceptance criteria:
 	•	Child model is implemented (team FK, first_name, last_initial, shirt_number, active flag, timestamps).
 	•	GuardianChildLink implements many-to-many between users (guardians) and children.
@@ -62,7 +62,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Implement ChildCampaignTarget model & target logic
+	•	[x] Implement ChildCampaignTarget model & target logic
 Acceptance criteria:
 	•	ChildCampaignTarget model exists with fields: child, campaign, target_units, buyout_amount, has_paid_buyout, timestamps.
 	•	Business logic to determine target_units chooses child-specific target if present, otherwise uses campaign default.
@@ -71,7 +71,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Add Product model & CRUD endpoints (coach)
+	•	[x] Add Product model & CRUD endpoints (coach)
 Acceptance criteria:
 	•	Product model exists with fields: campaign, name, description, unit_price, profit_per_unit, is_active.
 	•	/api/v1/campaigns/{campaign_id}/products (GET) returns a list of active products.
@@ -81,7 +81,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Add Sale model & basic sale creation endpoint
+	•	[x] Add Sale model & basic sale creation endpoint
 Acceptance criteria:
 	•	Sale model exists with fields from spec (campaign, child, product, quantity, total_price, buyer_name, is_paid, is_delivered, recorded_by, recorded_at, timestamps).
 	•	total_price is correctly calculated on create/update as quantity * product.unit_price.
@@ -90,7 +90,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Implement sale listing endpoints for guardians
+	•	[x] Implement sale listing endpoints for guardians
 Acceptance criteria:
 	•	/api/v1/campaigns/{campaign_id}/sales/my-children (GET) returns all sales for children linked to the authenticated guardian.
 	•	Responses include product name, quantity, total_price, is_paid, is_delivered.
@@ -99,7 +99,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Implement sale update & delete endpoints
+	•	[x] Implement sale update & delete endpoints
 Acceptance criteria:
 	•	/api/v1/sales/{id} (PATCH) allows updating quantity, payment status, delivery status.
 	•	Optional /api/v1/sales/{id} (DELETE) removes a sale (or marks as deleted) with correct permission checks.
@@ -108,7 +108,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Implement child campaign summary endpoint
+	•	[x] Implement child campaign summary endpoint
 Acceptance criteria:
 	•	/api/v1/children/{child_id}/campaigns/{campaign_id}/summary returns fields as per spec: target_units, total_units_sold, total_sales_amount, remaining_units_to_target, progress_percent.
 	•	Derived metrics are calculated using sales and targets correctly.
@@ -117,7 +117,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Implement team campaign summary & team-status endpoint
+	•	[x] Implement team campaign summary & team-status endpoint
 Acceptance criteria:
 	•	/api/v1/team/campaigns/{campaign_id}/summary returns a list of children with target_units, total_units_sold, progress_percent plus team totals.
 	•	Aggregate fields: team_total_units_sold, team_target_units, team_progress_percent are correctly computed.
@@ -126,7 +126,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Implement CSV export endpoint for coach
+	•	[x] Implement CSV export endpoint for coach
 Acceptance criteria:
 	•	/api/v1/campaigns/{campaign_id}/export/csv returns a CSV file with all sales required for ordering & bookkeeping (child, product, quantity, buyer_name, paid, delivered, totals).
 	•	Only coaches can access this endpoint.
@@ -135,7 +135,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Configure Django Admin for quick coach management (Phase 1 admin)
+	•	[x] Configure Django Admin for quick coach management (Phase 1 admin)
 Acceptance criteria:
 	•	User, Team, Campaign, Child, GuardianChildLink, ChildCampaignTarget, Product, Sale are all visible in Django Admin.
 	•	Admin lists are filtered by team/campaign where relevant.
@@ -144,7 +144,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Set up basic security: password hashing, HTTPS assumption, permissions
+	•	[x] Set up basic security: password hashing, HTTPS assumption, permissions
 Acceptance criteria:
 	•	Password hashing uses a strong algorithm (e.g. Argon2 or bcrypt).
 	•	DRF permissions enforce role-based rules for all endpoints (guardian vs coach).
@@ -153,7 +153,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Create React + TypeScript web app scaffold (Phase 1 Web)
+	•	[x] Create React + TypeScript web app scaffold (Phase 1 Web)
 Acceptance criteria:
 	•	React + TypeScript project is created (e.g. Vite or CRA).
 	•	API base URL and JWT handling are centralised (e.g. Axios instance with interceptor).
@@ -162,7 +162,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Implement login UI & JWT storage
+	•	[x] Implement login UI & JWT storage
 Acceptance criteria:
 	•	/login screen has email/password fields and a “Log in” button.
 	•	On successful login, JWT is stored securely (e.g. HTTP-only cookie or local storage with clear plan).
@@ -171,7 +171,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Implement Guardian “My Sales” home view
+	•	[x] Implement Guardian “My Sales” home view
 Acceptance criteria:
 	•	/home displays:
 	•	Child selector (dropdown or tabs) for guardians with multiple children.
