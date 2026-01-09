@@ -239,7 +239,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Expose Raspberry Pi app securely to the internet
+	•	[x] Expose Raspberry Pi app securely to the internet
 Acceptance criteria:
 	•	Either port forwarding + Let’s Encrypt or a tunneling solution (e.g. Cloudflare Tunnel) provides HTTPS public access.
 	•	Domain/subdomain points to the Pi-hosted app.
