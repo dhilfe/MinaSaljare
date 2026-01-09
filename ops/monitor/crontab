@@ -1,0 +1,2 @@
+# Check every 5 minutes
+*/5 * * * * /app/monitor.sh 1>>/proc/1/fd/1 2>>/proc/1/fd/2
