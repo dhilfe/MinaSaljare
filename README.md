@@ -58,6 +58,11 @@ The reverse proxy is Nginx and routes `/api/` to the Django backend.
 - Secrets/config should be provided via environment variables for non-local environments.
 - See [docs/specification.md](docs/specification.md) for the full functional spec.
 
+## Mobile (Flutter)
+
+- Flutter app lives in `mobile/mina_saljare_mobile`
+- TestFlight release flow: see [docs/testflight.md](docs/testflight.md)
+
 ## Git workflow (stage/main)
 
 - Long-lived branches: `stage` and `main`
