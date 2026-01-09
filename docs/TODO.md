@@ -268,7 +268,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Implement Guardian yearly history view (web)
+	•	[x] Implement Guardian yearly history view (web)
 Acceptance criteria:
 	•	A History/Year view exists in the web app where a guardian can select a year (default: current year) and see yearly statistics for their children using /api/v1/stats/me/children/year or per-child yearly endpoints.
 	•	For each child, the view shows total units sold, total sales amount, and a simple breakdown per campaign (campaign name + units + amount) for that year.

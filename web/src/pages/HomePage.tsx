@@ -143,6 +143,9 @@ export default function HomePage() {
         <button type="button" onClick={() => navigate('/add-sale')}>
           Add Sale
         </button>
+        <button type="button" onClick={() => navigate('/history')} style={{ marginLeft: '0.5rem' }}>
+          History
+        </button>
       </div>
 
       {error ? <p style={{ color: 'crimson' }}>{error}</p> : null}
