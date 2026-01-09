@@ -212,7 +212,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Dockerize backend & database for production-like deployment
+	•	[x] Dockerize backend & database for production-like deployment
 Acceptance criteria:
 	•	Dockerfile exists for Django backend (Gunicorn-based).
 	•	docker-compose.yml includes db (Postgres) and backend services as per spec.
