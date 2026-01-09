@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from core.models import Campaign, Child, Product, Sale, Team
+from .models import DeviceToken
 
 
 class TeamSerializer(serializers.ModelSerializer):
@@ -204,3 +205,13 @@ class ChildYearlyStatsSerializer(serializers.Serializer):
     total_units_sold = serializers.IntegerField()
     total_sales_amount = serializers.DecimalField(max_digits=12, decimal_places=2)
     campaigns = YearlyStatsCampaignItemSerializer(many=True)
+
+
+class DeviceTokenRegisterSerializer(serializers.Serializer):
+    token = serializers.CharField(max_length=512)
+    platform = serializers.ChoiceField(choices=DeviceToken.Platform.choices)
+    provider = serializers.ChoiceField(
+        choices=DeviceToken.Provider.choices,
+        required=False,
+        default=DeviceToken.Provider.FCM,
+    )
