@@ -3,6 +3,7 @@ import './App.css'
 import { Navigate, Route, Routes } from 'react-router-dom'
 
 import { getAccessToken } from './api/client'
+import AddSalePage from './pages/AddSalePage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import TeamPage from './pages/TeamPage'
@@ -26,6 +27,14 @@ function App() {
         element={
           <RequireAuth>
             <HomePage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/add-sale"
+        element={
+          <RequireAuth>
+            <AddSalePage />
           </RequireAuth>
         }
       />

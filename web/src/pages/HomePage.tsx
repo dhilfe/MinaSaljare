@@ -139,6 +139,12 @@ export default function HomePage() {
     <main style={{ maxWidth: 720, margin: '2rem auto', padding: '0 1rem' }}>
       <h1>Home</h1>
 
+      <div style={{ marginBottom: '1rem' }}>
+        <button type="button" onClick={() => navigate('/add-sale')}>
+          Add Sale
+        </button>
+      </div>
+
       {error ? <p style={{ color: 'crimson' }}>{error}</p> : null}
 
       {campaign ? <p>Active campaign: {campaign.name}</p> : null}

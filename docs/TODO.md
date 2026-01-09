@@ -182,7 +182,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Implement “Add Sale” flow in web UI
+	•	[x] Implement “Add Sale” flow in web UI
 Acceptance criteria:
 	•	A prominent “Add Sale” button from the home view opens the add-sale screen/modal.
 	•	Product selection uses /campaigns/{campaign_id}/products.
