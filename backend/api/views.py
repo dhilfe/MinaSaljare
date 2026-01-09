@@ -25,12 +25,15 @@ from .serializers import (
 	ChildCampaignSummarySerializer,
 	TeamYearlyStatsSerializer,
 		TeamCampaignSummarySerializer,
+		DeviceTokenRegisterSerializer,
 	SaleCreateSerializer,
 	SaleListItemSerializer,
 	SaleSerializer,
 	SaleUpdateSerializer,
 	TeamSerializer,
 )
+
+from .models import DeviceToken
 
 
 def _get_user_team(user):
@@ -130,6 +133,39 @@ def team(request):
 			return Response(TeamSerializer(team_obj).data)
 
 	return Response({'detail': 'No team associated with user'}, status=404)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def register_device_token(request):
+	serializer = DeviceTokenRegisterSerializer(data=request.data or {})
+	serializer.is_valid(raise_exception=True)
+
+	token = serializer.validated_data['token']
+	platform = serializer.validated_data['platform']
+	provider = serializer.validated_data.get('provider', DeviceToken.Provider.FCM)
+
+	obj, created = DeviceToken.objects.update_or_create(
+		token=token,
+		defaults={
+			'user': request.user,
+			'platform': platform,
+			'provider': provider,
+			'is_active': True,
+			'last_seen_at': timezone.now(),
+		},
+	)
+
+	return Response(
+		{
+			'id': obj.id,
+			'platform': obj.platform,
+			'provider': obj.provider,
+			'is_active': obj.is_active,
+			'last_seen_at': obj.last_seen_at.isoformat(),
+		},
+		status=201 if created else 200,
+	)
 
 
 @api_view(['GET', 'POST'])

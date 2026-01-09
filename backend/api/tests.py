@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.utils import timezone
 from rest_framework.test import APIClient
+from django.contrib.auth import get_user_model
+from api.models import DeviceToken
 
 from datetime import datetime
 
@@ -1031,4 +1033,47 @@ class YearlyStatisticsApiTests(TestCase):
 		self.assertEqual(res.status_code, 200)
 		self.assertEqual(res.data['total_units_sold'], 1)
 		self.assertEqual(res.data['total_sales_amount'], '100.00')
+
+class DeviceTokenApiTests(TestCase):
+	def setUp(self):
+		self.client = APIClient()
+		User = get_user_model()
+		self.user = User.objects.create_user(
+			email='guardian-device@example.com',
+			password='pass',
+			role='guardian',
+		)
+
+	def test_requires_auth(self):
+		res = self.client.post(
+			'/api/v1/device-tokens/',
+			{'token': 'abc', 'platform': 'ios', 'provider': 'fcm'},
+			format='json',
+		)
+		self.assertEqual(res.status_code, 401)
+
+	def test_registers_and_is_idempotent(self):
+		self.client.force_authenticate(user=self.user)
+		token = 'test-token-123'
+		res1 = self.client.post(
+			'/api/v1/device-tokens/',
+			{'token': token, 'platform': 'ios', 'provider': 'fcm'},
+			format='json',
+		)
+		self.assertEqual(res1.status_code, 201)
+		self.assertEqual(DeviceToken.objects.count(), 1)
+		obj = DeviceToken.objects.get(token=token)
+		self.assertEqual(obj.user_id, self.user.id)
+		self.assertEqual(obj.platform, 'ios')
+		self.assertEqual(obj.provider, 'fcm')
+
+		before = obj.last_seen_at
+		res2 = self.client.post(
+			'/api/v1/device-tokens/',
+			{'token': token, 'platform': 'ios', 'provider': 'fcm'},
+			format='json',
+		)
+		self.assertEqual(res2.status_code, 200)
+		obj.refresh_from_db()
+		self.assertTrue(obj.last_seen_at >= before)
 

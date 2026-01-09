@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'api/api_client.dart';
 import 'auth/token_storage.dart';
 import 'config/app_config.dart';
+import 'notifications/push_notifications.dart';
 import 'pages/app_shell.dart';
 import 'pages/login_page.dart';
 
@@ -11,23 +12,32 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key, this.api, this.tokenStorage});
+  const MyApp({super.key, this.api, this.tokenStorage, this.pushNotifications});
 
   final ApiClient? api;
   final AccessTokenStore? tokenStorage;
+  final PushNotifications? pushNotifications;
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     final store = tokenStorage ?? SecureTokenStorage();
     final apiClient = api ?? ApiClient(tokenStore: store);
+    final push = pushNotifications ??
+      (AppConfig.enablePushNotifications
+        ? FirebasePushNotifications(api: apiClient)
+        : NoopPushNotifications());
 
     return MaterialApp(
       title: 'MinaSäljare',
       theme: ThemeData(useMaterial3: true),
       routes: {
         '/login': (_) => LoginPage(api: apiClient, tokenStorage: store),
-        '/home': (_) => AppShell(api: apiClient, tokenStorage: store),
+        '/home': (_) => AppShell(
+              api: apiClient,
+              tokenStorage: store,
+              pushNotifications: push,
+            ),
         '/health': (_) => const HealthPage(),
       },
       home: StartPage(tokenStorage: store),
@@ -54,14 +64,14 @@ class _StartPageState extends State<StartPage> {
   Future<void> _decide() async {
     final token = await widget.tokenStorage.readAccessToken();
     if (!mounted) return;
-    Navigator.of(
-      context,
-    ).pushReplacementNamed(token == null ? '/login' : '/home');
+    Navigator.of(context).pushReplacementNamed(token == null ? '/login' : '/home');
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: Text('Loading…')));
+    return const Scaffold(
+      body: Center(child: Text('Loading…')),
+    );
   }
 }
 

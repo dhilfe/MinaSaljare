@@ -257,6 +257,23 @@ class ApiClient {
     }
   }
 
+
+
+  Future<void> registerDeviceToken({
+    required String token,
+    required String platform,
+    String provider = 'fcm',
+  }) async {
+    final response = await _httpClient.post(
+      _uri('/v1/device-tokens/'),
+      headers: await _authHeaders(json: true),
+      body: jsonEncode({'token': token, 'platform': platform, 'provider': provider}),
+    );
+
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception('Register device token failed (${response.statusCode})');
+    }
+  }
   Future<Map<String, dynamic>> _getJson(String path) async {
     final response = await _httpClient.get(
       _uri(path),
