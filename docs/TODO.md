@@ -296,7 +296,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Implement iOS login & token handling in Flutter
+	•	[x] Implement iOS login & token handling in Flutter
 Acceptance criteria:
 	•	Login screen exists mirroring the web login (email/password).
 	•	On successful login, JWT is stored securely (e.g. flutter_secure_storage).

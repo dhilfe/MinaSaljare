@@ -1,22 +1,66 @@
 import 'package:flutter/material.dart';
 
 import 'api/api_client.dart';
+import 'auth/token_storage.dart';
 import 'config/app_config.dart';
+import 'pages/home_page.dart';
+import 'pages/login_page.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, this.api, this.tokenStorage});
+
+  final ApiClient? api;
+  final AccessTokenStore? tokenStorage;
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final apiClient = api ?? ApiClient();
+    final store = tokenStorage ?? SecureTokenStorage();
+
     return MaterialApp(
       title: 'MinaSäljare',
       theme: ThemeData(useMaterial3: true),
-      home: const HealthPage(),
+      routes: {
+        '/login': (_) => LoginPage(api: apiClient, tokenStorage: store),
+        '/home': (_) => HomePage(tokenStorage: store),
+        '/health': (_) => const HealthPage(),
+      },
+      home: StartPage(tokenStorage: store),
+    );
+  }
+}
+
+class StartPage extends StatefulWidget {
+  const StartPage({super.key, required this.tokenStorage});
+
+  final AccessTokenStore tokenStorage;
+
+  @override
+  State<StartPage> createState() => _StartPageState();
+}
+
+class _StartPageState extends State<StartPage> {
+  @override
+  void initState() {
+    super.initState();
+    _decide();
+  }
+
+  Future<void> _decide() async {
+    final token = await widget.tokenStorage.readAccessToken();
+    if (!mounted) return;
+    Navigator.of(context).pushReplacementNamed(token == null ? '/login' : '/home');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(child: Text('Loading…')),
     );
   }
 }
