@@ -287,7 +287,7 @@ Acceptance criteria:
 ⸻
 
 Phase 2 – Flutter iOS App
-	•	Initialize Flutter project and integrate with REST API
+	•	[x] Initialize Flutter project and integrate with REST API
 Acceptance criteria:
 	•	Flutter project is created with a clean folder structure.
 	•	Base HTTP client for talking to the REST API is implemented.
