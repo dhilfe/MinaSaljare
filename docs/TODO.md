@@ -192,7 +192,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Implement Guardian Team Status view (web)
+	•	[x] Implement Guardian Team Status view (web)
 Acceptance criteria:
 	•	/team (or similar route) shows:
 	•	Campaign name & end date.
