@@ -20,6 +20,7 @@ from .views import (
     stats_child_year,
     stats_team_year,
         register_device_token,
+    send_test_notification,
 )
 
 
@@ -43,4 +44,6 @@ urlpatterns = [
     path('v1/stats/team/year/', stats_team_year, name='stats-team-year'),
     path('v1/stats/child/<uuid:child_id>/year/', stats_child_year, name='stats-child-year'),
         path('v1/device-tokens/', register_device_token, name='register-device-token'),
+
+        path('v1/notifications/test/', send_test_notification, name='send-test-notification'),
 ]

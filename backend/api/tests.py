@@ -4,6 +4,7 @@ from django.utils import timezone
 from rest_framework.test import APIClient
 from django.contrib.auth import get_user_model
 from api.models import DeviceToken
+from unittest import mock
 
 from datetime import datetime
 
@@ -1076,4 +1077,48 @@ class DeviceTokenApiTests(TestCase):
 		self.assertEqual(res2.status_code, 200)
 		obj.refresh_from_db()
 		self.assertTrue(obj.last_seen_at >= before)
+
+
+class TestNotificationApiTests(TestCase):
+	def setUp(self):
+		self.client = APIClient()
+		User = get_user_model()
+		self.coach = User.objects.create_user(
+			email='coach-push@example.com',
+			password='pass',
+			role='coach',
+		)
+		self.guardian = User.objects.create_user(
+			email='guardian-push@example.com',
+			password='pass',
+			role='guardian',
+		)
+
+	def test_only_coach_can_send(self):
+		self.client.force_authenticate(user=self.guardian)
+		res = self.client.post('/api/v1/notifications/test/', {}, format='json')
+		self.assertEqual(res.status_code, 403)
+
+	def test_404_when_no_tokens(self):
+		self.client.force_authenticate(user=self.coach)
+		res = self.client.post('/api/v1/notifications/test/', {}, format='json')
+		self.assertEqual(res.status_code, 404)
+
+	def test_sends_with_mocked_sender(self):
+		DeviceToken.objects.create(
+			user=self.coach,
+			token='t1',
+			provider='fcm',
+			platform='ios',
+		)
+
+		self.client.force_authenticate(user=self.coach)
+		with mock.patch('api.views.send_test_push', return_value=1):
+			res = self.client.post(
+				'/api/v1/notifications/test/',
+				{'title': 'Hello', 'body': 'World'},
+				format='json',
+			)
+		self.assertEqual(res.status_code, 200)
+		self.assertEqual(res.data['attempted'], 1)
 
