@@ -5,6 +5,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { getAccessToken } from './api/client'
 import AddSalePage from './pages/AddSalePage'
 import CoachDashboardPage from './pages/CoachDashboardPage'
+import HistoryPage from './pages/HistoryPage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import TeamPage from './pages/TeamPage'
@@ -44,6 +45,14 @@ function App() {
         element={
           <RequireAuth>
             <TeamPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/history"
+        element={
+          <RequireAuth>
+            <HistoryPage />
           </RequireAuth>
         }
       />
