@@ -1,6 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.utils import timezone
 from rest_framework.test import APIClient
+
+from datetime import datetime
 
 from core.models import Campaign, Team
 
@@ -878,3 +881,154 @@ class CampaignExportCsvApiTests(TestCase):
 		url = f'/api/v1/campaigns/{self.campaign.id}/export/csv'
 		res = self.client.get(url)
 		self.assertEqual(res.status_code, 404)
+
+
+class YearlyStatisticsApiTests(TestCase):
+	def setUp(self):
+		self.client = APIClient()
+		User = get_user_model()
+
+		self.coach = User.objects.create_user(email='coach-stats@example.com', password='pass', role='coach')
+		self.team = Team.objects.create(name='P11 Blue', club_name='Test Club', coach=self.coach)
+		self.guardian = User.objects.create_user(
+			email='guardian-stats@example.com',
+			password='pass',
+			role='guardian',
+			team=self.team,
+		)
+
+		self.child_a = Child.objects.create(team=self.team, first_name='Lisa', last_initial='A', is_active=True)
+		self.child_b = Child.objects.create(team=self.team, first_name='Erik', last_initial='B', is_active=True)
+		GuardianChildLink.objects.create(guardian=self.guardian, child=self.child_a)
+
+		self.camp_2026_a = Campaign.objects.create(
+			team=self.team,
+			name='Spring 2026',
+			description='',
+			start_date='2026-03-01',
+			end_date='2026-03-31',
+			default_target_units_per_child=10,
+			buyout_amount_per_child='0.00',
+			currency='SEK',
+			is_active=False,
+		)
+		self.camp_2026_b = Campaign.objects.create(
+			team=self.team,
+			name='Winter 2026',
+			description='',
+			start_date='2026-12-01',
+			end_date='2026-12-31',
+			default_target_units_per_child=10,
+			buyout_amount_per_child='0.00',
+			currency='SEK',
+			is_active=False,
+		)
+		self.camp_2025 = Campaign.objects.create(
+			team=self.team,
+			name='Old 2025',
+			description='',
+			start_date='2025-03-01',
+			end_date='2025-03-31',
+			default_target_units_per_child=10,
+			buyout_amount_per_child='0.00',
+			currency='SEK',
+			is_active=False,
+		)
+
+		p1 = Product.objects.create(campaign=self.camp_2026_a, name='Salami', description='', unit_price='100.00', profit_per_unit='0.00', is_active=True)
+		p2 = Product.objects.create(campaign=self.camp_2026_b, name='Cookies', description='', unit_price='50.00', profit_per_unit='0.00', is_active=True)
+		p3 = Product.objects.create(campaign=self.camp_2025, name='Old', description='', unit_price='999.00', profit_per_unit='0.00', is_active=True)
+
+		# 2026 sales
+		Sale.objects.create(
+			campaign=self.camp_2026_a,
+			child=self.child_a,
+			product=p1,
+			quantity=2,
+			total_price='0.00',
+			buyer_name='',
+			is_paid=True,
+			is_delivered=False,
+			recorded_by=self.guardian,
+			recorded_at=timezone.make_aware(datetime(2026, 3, 10, 12, 0, 0)),
+		)
+		Sale.objects.create(
+			campaign=self.camp_2026_a,
+			child=self.child_b,
+			product=p1,
+			quantity=1,
+			total_price='0.00',
+			buyer_name='',
+			is_paid=True,
+			is_delivered=False,
+			recorded_by=self.coach,
+			recorded_at=timezone.make_aware(datetime(2026, 3, 11, 12, 0, 0)),
+		)
+		Sale.objects.create(
+			campaign=self.camp_2026_b,
+			child=self.child_a,
+			product=p2,
+			quantity=3,
+			total_price='0.00',
+			buyer_name='',
+			is_paid=False,
+			is_delivered=False,
+			recorded_by=self.guardian,
+			recorded_at=timezone.make_aware(datetime(2026, 12, 5, 12, 0, 0)),
+		)
+
+		# 2025 sale (should not be counted for 2026)
+		Sale.objects.create(
+			campaign=self.camp_2025,
+			child=self.child_a,
+			product=p3,
+			quantity=1,
+			total_price='0.00',
+			buyer_name='',
+			is_paid=False,
+			is_delivered=False,
+			recorded_by=self.guardian,
+			recorded_at=timezone.make_aware(datetime(2025, 3, 10, 12, 0, 0)),
+		)
+
+	def test_team_year_stats_coach_only(self):
+		self.client.force_authenticate(user=self.guardian)
+		res = self.client.get('/api/v1/stats/team/year/?year=2026')
+		self.assertEqual(res.status_code, 403)
+
+	def test_team_year_stats_returns_aggregates(self):
+		self.client.force_authenticate(user=self.coach)
+		res = self.client.get('/api/v1/stats/team/year/?year=2026')
+		self.assertEqual(res.status_code, 200)
+		self.assertEqual(res.data['year'], 2026)
+		self.assertEqual(str(res.data['team']['id']), str(self.team.id))
+		self.assertEqual(res.data['total_units_sold'], 6)
+		self.assertEqual(res.data['total_sales_amount'], '450.00')
+
+		children = {row['child_id']: row for row in res.data['children']}
+		self.assertIn(str(self.child_a.id), children)
+		self.assertIn(str(self.child_b.id), children)
+		self.assertEqual(children[str(self.child_a.id)]['total_units_sold'], 5)
+		self.assertEqual(children[str(self.child_a.id)]['total_sales_amount'], '350.00')
+		self.assertEqual(children[str(self.child_b.id)]['total_units_sold'], 1)
+		self.assertEqual(children[str(self.child_b.id)]['total_sales_amount'], '100.00')
+
+	def test_child_year_stats_guardian_only_for_linked_child(self):
+		self.client.force_authenticate(user=self.guardian)
+		res = self.client.get(f'/api/v1/stats/child/{self.child_a.id}/year/?year=2026')
+		self.assertEqual(res.status_code, 200)
+		self.assertEqual(res.data['year'], 2026)
+		self.assertEqual(str(res.data['child']['id']), str(self.child_a.id))
+		self.assertEqual(res.data['total_units_sold'], 5)
+		self.assertEqual(res.data['total_sales_amount'], '350.00')
+
+		res2 = self.client.get(f'/api/v1/stats/child/{self.child_b.id}/year/?year=2026')
+		self.assertEqual(res2.status_code, 404)
+
+	def test_child_year_stats_coach_can_access_team_children(self):
+		self.client.force_authenticate(user=self.coach)
+		res = self.client.get(f'/api/v1/stats/child/{self.child_b.id}/year/?year=2026')
+		self.assertEqual(res.status_code, 200)
+		self.assertEqual(res.data['total_units_sold'], 1)
+		self.assertEqual(res.data['total_sales_amount'], '100.00')
+
