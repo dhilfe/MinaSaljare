@@ -22,6 +22,10 @@ fi
 
 python manage.py migrate --noinput
 
+if [ "${DJANGO_COLLECTSTATIC:-1}" != "0" ]; then
+  python manage.py collectstatic --noinput
+fi
+
 exec gunicorn salesapp.wsgi:application \
   --bind 0.0.0.0:8000 \
   --workers ${WEB_CONCURRENCY:-2} \
