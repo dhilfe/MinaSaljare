@@ -145,6 +145,12 @@ export default function CoachDashboardPage() {
         </a>
       </section>
 
+      <section style={{ marginBottom: '1rem' }}>
+        <button type="button" onClick={() => navigate('/coach/yearly')}>
+          Yearly stats
+        </button>
+      </section>
+
       {campaign ? (
         <section style={{ border: '1px solid #ddd', borderRadius: 8, padding: '1rem', marginBottom: '1rem' }}>
           <h2 style={{ marginTop: 0 }}>Campaign</h2>

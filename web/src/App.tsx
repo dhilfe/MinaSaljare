@@ -5,6 +5,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { getAccessToken } from './api/client'
 import AddSalePage from './pages/AddSalePage'
 import CoachDashboardPage from './pages/CoachDashboardPage'
+import CoachYearlyStatsPage from './pages/CoachYearlyStatsPage'
 import HistoryPage from './pages/HistoryPage'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
@@ -61,6 +62,14 @@ function App() {
         element={
           <RequireAuth>
             <CoachDashboardPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/coach/yearly"
+        element={
+          <RequireAuth>
+            <CoachYearlyStatsPage />
           </RequireAuth>
         }
       />

@@ -277,7 +277,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Implement coach yearly statistics dashboard (web)
+	•	[x] Implement coach yearly statistics dashboard (web)
 Acceptance criteria:
 	•	A coach-only yearly statistics view exists in the web app that uses /api/v1/stats/team/year for the logged-in coach’s team.
 	•	The view shows team totals for the selected year (units and sales amount) plus a sortable table of children with their yearly totals and number of campaigns.
