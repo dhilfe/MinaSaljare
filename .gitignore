@@ -26,6 +26,9 @@ media/
 .env.*
 !.env.example
 
+# Backups
+backups/
+
 # Node / React
 node_modules/
 dist/

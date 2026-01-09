@@ -248,7 +248,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Implement automated backups & simple monitoring
+	•	[x] Implement automated backups & simple monitoring
 Acceptance criteria:
 	•	Nightly Postgres backups are configured (e.g. cron + pg_dump) to an encrypted location.
 	•	There is a documented restore procedure tested at least once.
