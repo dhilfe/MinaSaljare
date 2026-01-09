@@ -17,6 +17,8 @@ from .views import (
     sale_detail,
     team_campaign_summary,
     team,
+    stats_child_year,
+    stats_team_year,
 )
 
 
@@ -37,4 +39,6 @@ urlpatterns = [
     path('v1/sales/<uuid:sale_id>/', sale_detail, name='sale-detail'),
     path('v1/products/<uuid:product_id>/', product_detail, name='product-detail'),
 	path('v1/children/', children, name='children'),
+    path('v1/stats/team/year/', stats_team_year, name='stats-team-year'),
+    path('v1/stats/child/<uuid:child_id>/year/', stats_child_year, name='stats-child-year'),
 ]

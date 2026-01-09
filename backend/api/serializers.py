@@ -167,3 +167,40 @@ class SaleListItemSerializer(serializers.ModelSerializer):
             'is_paid',
             'is_delivered',
         )
+
+
+class YearlyStatsCampaignItemSerializer(serializers.Serializer):
+    campaign_id = serializers.UUIDField()
+    campaign_name = serializers.CharField()
+    units_sold = serializers.IntegerField()
+    sales_amount = serializers.DecimalField(max_digits=12, decimal_places=2)
+
+
+class YearlyStatsChildItemSerializer(serializers.Serializer):
+    child_id = serializers.UUIDField()
+    name = serializers.CharField()
+    total_units_sold = serializers.IntegerField()
+    total_sales_amount = serializers.DecimalField(max_digits=12, decimal_places=2)
+    campaigns = YearlyStatsCampaignItemSerializer(many=True)
+
+
+class TeamYearlyStatsSerializer(serializers.Serializer):
+    team = TeamSummaryTeamSerializer()
+    year = serializers.IntegerField()
+    total_units_sold = serializers.IntegerField()
+    total_sales_amount = serializers.DecimalField(max_digits=12, decimal_places=2)
+    children = YearlyStatsChildItemSerializer(many=True)
+
+
+class YearlyStatsChildRefSerializer(serializers.Serializer):
+    id = serializers.UUIDField()
+    name = serializers.CharField()
+
+
+
+class ChildYearlyStatsSerializer(serializers.Serializer):
+    child = YearlyStatsChildRefSerializer()
+    year = serializers.IntegerField()
+    total_units_sold = serializers.IntegerField()
+    total_sales_amount = serializers.DecimalField(max_digits=12, decimal_places=2)
+    campaigns = YearlyStatsCampaignItemSerializer(many=True)

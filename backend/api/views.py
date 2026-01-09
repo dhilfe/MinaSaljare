@@ -1,5 +1,6 @@
 import csv
 import io
+from datetime import datetime
 
 from django.contrib.auth import authenticate
 from decimal import Decimal
@@ -7,6 +8,7 @@ from decimal import Decimal
 from django.http import HttpResponse
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
+from django.utils import timezone
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -17,9 +19,11 @@ from core.models import Campaign, Child, ChildCampaignTarget, GuardianChildLink,
 from .serializers import (
 	CampaignSerializer,
 	ChildSerializer,
+	ChildYearlyStatsSerializer,
 	ProductSerializer,
 	ResolvedChildCampaignTargetSerializer,
 	ChildCampaignSummarySerializer,
+	TeamYearlyStatsSerializer,
 		TeamCampaignSummarySerializer,
 	SaleCreateSerializer,
 	SaleListItemSerializer,
@@ -35,6 +39,30 @@ def _get_user_team(user):
 	if getattr(user, 'role', None) == 'coach':
 		return Team.objects.filter(coach=user).first()
 	return None
+
+
+def _parse_year_param(request):
+	year_raw = None
+	if hasattr(request, 'query_params'):
+		year_raw = request.query_params.get('year')
+	if year_raw is None:
+		year_raw = request.GET.get('year')
+	if not year_raw:
+		return None, Response({'detail': 'year query param is required'}, status=400)
+	try:
+		year = int(year_raw)
+	except ValueError:
+		return None, Response({'detail': 'year must be an integer'}, status=400)
+	if year < 1970 or year > 2100:
+		return None, Response({'detail': 'year out of supported range'}, status=400)
+	return year, None
+
+
+def _child_short_name(child_obj):
+	name = child_obj.first_name
+	if child_obj.last_initial:
+		name = f'{name} {child_obj.last_initial}'
+	return name
 
 
 @api_view(['GET'])
@@ -603,6 +631,152 @@ def team_campaign_summary(request, campaign_id):
 				'team_progress_percent': team_progress_percent,
 		}
 		return Response(TeamCampaignSummarySerializer(payload).data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def stats_team_year(request):
+	user = request.user
+	team_obj = _get_user_team(user)
+	if team_obj is None:
+		return Response({'detail': 'No team associated with user'}, status=404)
+
+	if getattr(user, 'role', None) != 'coach':
+		return Response({'detail': 'Forbidden'}, status=403)
+	if Team.objects.filter(id=team_obj.id, coach=user).exists() is False:
+		return Response({'detail': 'Forbidden'}, status=403)
+
+	year, err = _parse_year_param(request)
+	if err is not None:
+		return err
+
+	sales_qs = Sale.objects.filter(child__team=team_obj, recorded_at__year=year)
+
+	totals = sales_qs.aggregate(
+		units=Coalesce(Sum('quantity'), 0),
+		amount=Coalesce(Sum('total_price'), Decimal('0.00')),
+	)
+	total_units_sold = int(totals['units'] or 0)
+	total_sales_amount = totals['amount'] or Decimal('0.00')
+
+	rows = (
+		sales_qs.values(
+			'child_id',
+			'child__first_name',
+			'child__last_initial',
+			'campaign_id',
+			'campaign__name',
+		)
+		.annotate(
+			units=Coalesce(Sum('quantity'), 0),
+			amount=Coalesce(Sum('total_price'), Decimal('0.00')),
+		)
+		.order_by('child__first_name', 'child_id', 'campaign__name', 'campaign_id')
+	)
+
+	children_by_id = {}
+	for row in rows:
+		child_id = row['child_id']
+		child_name = row['child__first_name']
+		if row.get('child__last_initial'):
+			child_name = f"{child_name} {row['child__last_initial']}"
+
+		entry = children_by_id.get(child_id)
+		if entry is None:
+			entry = {
+				'child_id': child_id,
+				'name': child_name,
+				'total_units_sold': 0,
+				'total_sales_amount': Decimal('0.00'),
+				'campaigns': [],
+			}
+			children_by_id[child_id] = entry
+
+		units_sold = int(row['units'] or 0)
+		sales_amount = row['amount'] or Decimal('0.00')
+		entry['total_units_sold'] += units_sold
+		entry['total_sales_amount'] += sales_amount
+		entry['campaigns'].append(
+			{
+				'campaign_id': row['campaign_id'],
+				'campaign_name': row['campaign__name'],
+				'units_sold': units_sold,
+				'sales_amount': sales_amount,
+			}
+		)
+
+	children_payload = list(children_by_id.values())
+
+	payload = {
+		'team': {'id': team_obj.id, 'name': team_obj.name},
+		'year': year,
+		'total_units_sold': total_units_sold,
+		'total_sales_amount': total_sales_amount,
+		'children': children_payload,
+	}
+	return Response(TeamYearlyStatsSerializer(payload).data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def stats_child_year(request, child_id):
+	user = request.user
+	team_obj = _get_user_team(user)
+	if team_obj is None:
+		return Response({'detail': 'No team associated with user'}, status=404)
+
+	child_obj = Child.objects.filter(id=child_id, team=team_obj).first()
+	if child_obj is None:
+		return Response({'detail': 'Child not found'}, status=404)
+
+	role = getattr(user, 'role', None)
+	if role == 'guardian':
+		if not GuardianChildLink.objects.filter(guardian=user, child=child_obj).exists():
+			return Response({'detail': 'Child not found'}, status=404)
+	elif role == 'coach':
+		if Team.objects.filter(id=team_obj.id, coach=user).exists() is False:
+			return Response({'detail': 'Forbidden'}, status=403)
+	else:
+		return Response({'detail': 'Forbidden'}, status=403)
+
+	year, err = _parse_year_param(request)
+	if err is not None:
+		return err
+
+	sales_qs = Sale.objects.filter(child=child_obj, recorded_at__year=year)
+	totals = sales_qs.aggregate(
+		units=Coalesce(Sum('quantity'), 0),
+		amount=Coalesce(Sum('total_price'), Decimal('0.00')),
+	)
+	total_units_sold = int(totals['units'] or 0)
+	total_sales_amount = totals['amount'] or Decimal('0.00')
+
+	rows = (
+		sales_qs.values('campaign_id', 'campaign__name')
+		.annotate(
+			units=Coalesce(Sum('quantity'), 0),
+			amount=Coalesce(Sum('total_price'), Decimal('0.00')),
+		)
+		.order_by('campaign__name', 'campaign_id')
+	)
+	campaigns_payload = [
+		{
+			'campaign_id': row['campaign_id'],
+			'campaign_name': row['campaign__name'],
+			'units_sold': int(row['units'] or 0),
+			'sales_amount': row['amount'] or Decimal('0.00'),
+		}
+		for row in rows
+	]
+
+	payload = {
+		'child': {'id': child_obj.id, 'name': _child_short_name(child_obj)},
+		'year': year,
+		'total_units_sold': total_units_sold,
+		'total_sales_amount': total_sales_amount,
+		'campaigns': campaigns_payload,
+	}
+	return Response(ChildYearlyStatsSerializer(payload).data)
 
 
 @api_view(['GET'])

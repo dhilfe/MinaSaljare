@@ -259,7 +259,7 @@ Acceptance criteria:
 
 ⸻
 
-	•	Implement yearly statistics endpoints (team & children)
+	•	[x] Implement yearly statistics endpoints (team & children)
 Acceptance criteria:
 	•	Backend exposes /api/v1/stats/team/year, /api/v1/stats/child/{child_id}/year and /api/v1/stats/me/children/year as described in specification_v2.md.
 	•	Given test data spanning multiple campaigns within the same calendar year, all three endpoints return correct totals for units and sales amounts, and correct per-campaign breakdowns according to the spec.
