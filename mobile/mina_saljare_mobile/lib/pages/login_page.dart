@@ -59,7 +59,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final canSubmit = _emailController.text.trim().isNotEmpty &&
+    final canSubmit =
+        _emailController.text.trim().isNotEmpty &&
         _passwordController.text.isNotEmpty &&
         !_isSubmitting;
 
@@ -92,10 +93,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             if (_error != null) ...[
               const SizedBox(height: 12),
-              Text(
-                _error!,
-                style: const TextStyle(color: Colors.red),
-              ),
+              Text(_error!, style: const TextStyle(color: Colors.red)),
             ],
           ],
         ),
