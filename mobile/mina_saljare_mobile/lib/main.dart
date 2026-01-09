@@ -19,15 +19,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final apiClient = api ?? ApiClient();
     final store = tokenStorage ?? SecureTokenStorage();
+    final apiClient = api ?? ApiClient(tokenStore: store);
 
     return MaterialApp(
       title: 'MinaSäljare',
       theme: ThemeData(useMaterial3: true),
       routes: {
         '/login': (_) => LoginPage(api: apiClient, tokenStorage: store),
-        '/home': (_) => HomePage(tokenStorage: store),
+        '/home': (_) => HomePage(api: apiClient, tokenStorage: store),
         '/health': (_) => const HealthPage(),
       },
       home: StartPage(tokenStorage: store),
@@ -54,14 +54,14 @@ class _StartPageState extends State<StartPage> {
   Future<void> _decide() async {
     final token = await widget.tokenStorage.readAccessToken();
     if (!mounted) return;
-    Navigator.of(context).pushReplacementNamed(token == null ? '/login' : '/home');
+    Navigator.of(
+      context,
+    ).pushReplacementNamed(token == null ? '/login' : '/home');
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text('Loading…')),
-    );
+    return const Scaffold(body: Center(child: Text('Loading…')));
   }
 }
 
