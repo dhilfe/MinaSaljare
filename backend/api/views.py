@@ -25,13 +25,15 @@ from .serializers import (
 	ChildCampaignSummarySerializer,
 	TeamYearlyStatsSerializer,
 		TeamCampaignSummarySerializer,
-		DeviceTokenRegisterSerializer,
 	SaleCreateSerializer,
 	SaleListItemSerializer,
 	SaleSerializer,
 	SaleUpdateSerializer,
 	TeamSerializer,
+	DeviceTokenRegisterSerializer,
 )
+
+from .push import PushSendError, active_tokens_for_user, send_test_push
 
 from .models import DeviceToken
 
@@ -133,6 +135,30 @@ def team(request):
 			return Response(TeamSerializer(team_obj).data)
 
 	return Response({'detail': 'No team associated with user'}, status=404)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def send_test_notification(request):
+	user = request.user
+
+	if getattr(user, 'role', None) != 'coach':
+		return Response({'detail': 'Only coaches can send test notifications'}, status=403)
+
+	data = request.data or {}
+	title = data.get('title') or 'Test'
+	body = data.get('body') or 'This is a test notification.'
+
+	tokens = active_tokens_for_user(user)
+	if not tokens:
+		return Response({'detail': 'No active device tokens for user'}, status=404)
+
+	try:
+		attempted = send_test_push(tokens=tokens, title=title, body=body)
+	except PushSendError as e:
+		return Response({'detail': str(e)}, status=400)
+
+	return Response({'attempted': attempted}, status=200)
 
 
 @api_view(['POST'])
