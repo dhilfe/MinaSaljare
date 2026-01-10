@@ -70,7 +70,7 @@ export default function CoachDashboardPage() {
         if (!isMounted) return
 
         if (meRes.data.role !== 'coach') {
-          setError('Forbidden: coach access only.')
+          setError('Åtkomst nekad: endast coach.')
           setCampaign(null)
           setSummary(null)
           return
@@ -99,12 +99,12 @@ export default function CoachDashboardPage() {
           return
         }
         if (status === 404) {
-          setError('No active campaign found for your team.')
+          setError('Ingen aktiv kampanj hittades för ditt lag.')
           setCampaign(null)
           setSummary(null)
           return
         }
-        setError('Failed to load coach dashboard. Please try again.')
+        setError('Kunde inte hämta tränarpanelen. Försök igen.')
         setSummary(null)
       } finally {
         if (isMounted) setIsLoading(false)
@@ -120,42 +120,42 @@ export default function CoachDashboardPage() {
   if (isLoading) {
     return (
       <main style={{ maxWidth: 900, margin: '2rem auto', padding: '0 1rem' }}>
-        <h1>Coach Dashboard</h1>
-        <p>Loading…</p>
+        <h1>Tränarpanel</h1>
+        <p>Laddar…</p>
       </main>
     )
   }
 
   return (
     <main style={{ maxWidth: 900, margin: '2rem auto', padding: '0 1rem' }}>
-      <h1>Coach Dashboard</h1>
+      <h1>Tränarpanel</h1>
 
       {error ? (
         <section style={{ border: '1px solid #ddd', borderRadius: 8, padding: '1rem', marginBottom: '1rem' }}>
           <p style={{ color: 'crimson', marginTop: 0 }}>{error}</p>
           <button type="button" onClick={() => navigate('/home')}>
-            Go to Home
+            Gå till Hem
           </button>
         </section>
       ) : null}
 
       <section style={{ marginBottom: '1rem' }}>
         <a href="/admin/" target="_blank" rel="noreferrer">
-          Open Django Admin
+          Öppna Django Admin
         </a>
       </section>
 
       <section style={{ marginBottom: '1rem' }}>
         <button type="button" onClick={() => navigate('/coach/yearly')}>
-          Yearly stats
+          Årsstatistik
         </button>
       </section>
 
       {campaign ? (
         <section style={{ border: '1px solid #ddd', borderRadius: 8, padding: '1rem', marginBottom: '1rem' }}>
-          <h2 style={{ marginTop: 0 }}>Campaign</h2>
-          <p style={{ marginBottom: 0 }}>Name: {campaign.name}</p>
-          <p style={{ marginBottom: 0 }}>End date: {campaign.end_date}</p>
+          <h2 style={{ marginTop: 0 }}>Kampanj</h2>
+          <p style={{ marginBottom: 0 }}>Namn: {campaign.name}</p>
+          <p style={{ marginBottom: 0 }}>Slutdatum: {campaign.end_date}</p>
         </section>
       ) : null}
 
@@ -164,24 +164,24 @@ export default function CoachDashboardPage() {
           <section style={{ border: '1px solid #ddd', borderRadius: 8, padding: '1rem', marginBottom: '1rem' }}>
             <h2 style={{ marginTop: 0 }}>{summary.team.name}</h2>
             <p>
-              Team total: {summary.team_total_units_sold} / {summary.team_target_units}
+              Lagets total: {summary.team_total_units_sold} / {summary.team_target_units}
             </p>
             <progress value={teamProgressValue} max={100} style={{ width: '100%', height: 20 }} />
             <p>{summary.team_progress_percent}%</p>
           </section>
 
           <section style={{ textAlign: 'left' }}>
-            <h2>Children</h2>
-            {summary.children.length === 0 ? <p>No active children in team.</p> : null}
+            <h2>Barn</h2>
+            {summary.children.length === 0 ? <p>Inga aktiva barn i laget.</p> : null}
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr>
-                    <th style={{ textAlign: 'left', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>Name</th>
-                    <th style={{ textAlign: 'right', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>Sold</th>
-                    <th style={{ textAlign: 'right', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>Target</th>
+                    <th style={{ textAlign: 'left', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>Namn</th>
+                    <th style={{ textAlign: 'right', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>Sålt</th>
+                    <th style={{ textAlign: 'right', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>Mål</th>
                     <th style={{ textAlign: 'right', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>%</th>
-                    <th style={{ textAlign: 'right', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>Remaining</th>
+                    <th style={{ textAlign: 'right', padding: '0.5rem', borderBottom: '1px solid #ddd' }}>Kvar</th>
                   </tr>
                 </thead>
                 <tbody>

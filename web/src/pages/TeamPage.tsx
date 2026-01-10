@@ -81,12 +81,12 @@ export default function TeamPage() {
           return
         }
         if (status === 404) {
-          setError('No active campaign found for your team.')
+          setError('Ingen aktiv kampanj hittades för ditt lag.')
           setCampaign(null)
           setSummary(null)
           return
         }
-        setError('Failed to load team status. Please try again.')
+        setError('Kunde inte hämta lagstatus. Försök igen.')
         setSummary(null)
       } finally {
         if (isMounted) setIsLoading(false)
@@ -102,23 +102,23 @@ export default function TeamPage() {
   if (isLoading) {
     return (
       <main style={{ maxWidth: 720, margin: '2rem auto', padding: '0 1rem' }}>
-        <h1>Team</h1>
-        <p>Loading…</p>
+        <h1>Lag</h1>
+        <p>Laddar…</p>
       </main>
     )
   }
 
   return (
     <main style={{ maxWidth: 720, margin: '2rem auto', padding: '0 1rem' }}>
-      <h1>Team</h1>
+      <h1>Lag</h1>
 
       {error ? <p style={{ color: 'crimson' }}>{error}</p> : null}
 
       {campaign ? (
         <section style={{ border: '1px solid #ddd', borderRadius: 8, padding: '1rem', marginBottom: '1rem' }}>
-          <h2 style={{ marginTop: 0 }}>Campaign</h2>
-          <p style={{ marginBottom: 0 }}>Name: {campaign.name}</p>
-          <p style={{ marginBottom: 0 }}>End date: {campaign.end_date}</p>
+          <h2 style={{ marginTop: 0 }}>Kampanj</h2>
+          <p style={{ marginBottom: 0 }}>Namn: {campaign.name}</p>
+          <p style={{ marginBottom: 0 }}>Slutdatum: {campaign.end_date}</p>
         </section>
       ) : null}
 
@@ -127,15 +127,15 @@ export default function TeamPage() {
           <section style={{ border: '1px solid #ddd', borderRadius: 8, padding: '1rem', marginBottom: '1rem' }}>
             <h2 style={{ marginTop: 0 }}>{summary.team.name}</h2>
             <p>
-              Team total: {summary.team_total_units_sold} / {summary.team_target_units}
+              Lagets total: {summary.team_total_units_sold} / {summary.team_target_units}
             </p>
             <progress value={teamProgressValue} max={100} style={{ width: '100%', height: 20 }} />
             <p>{summary.team_progress_percent}%</p>
           </section>
 
           <section style={{ textAlign: 'left' }}>
-            <h2>Children</h2>
-            {summary.children.length === 0 ? <p>No active children in team.</p> : null}
+            <h2>Barn</h2>
+            {summary.children.length === 0 ? <p>Inga aktiva barn i laget.</p> : null}
             <div style={{ display: 'grid', gap: '0.75rem' }}>
               {summary.children.map((c) => {
                 const percentNum = Number(c.progress_percent)
@@ -151,7 +151,7 @@ export default function TeamPage() {
                     <progress value={percentValue} max={100} style={{ width: '100%', height: 14, marginTop: 8 }} />
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontSize: 14 }}>
                       <span>{c.progress_percent}%</span>
-                      <span>Remaining: {Math.max(0, c.target_units - c.total_units_sold)}</span>
+                      <span>Kvar: {Math.max(0, c.target_units - c.total_units_sold)}</span>
                     </div>
                   </div>
                 )
