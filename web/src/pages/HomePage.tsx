@@ -72,13 +72,13 @@ export default function HomePage() {
           return
         }
         if (status === 404) {
-          setError('No active campaign found for your team.')
+          setError('Ingen aktiv kampanj hittades för ditt lag.')
           setCampaign(null)
           setChildren([])
           setSelectedChildId('')
           return
         }
-        setError('Failed to load data. Please try again.')
+        setError('Kunde inte hämta data. Försök igen.')
       } finally {
         if (isMounted) setIsLoading(false)
       }
@@ -114,7 +114,7 @@ export default function HomePage() {
           navigate('/login', { replace: true })
           return
         }
-        setError('Failed to load child summary. Please try again.')
+        setError('Kunde inte hämta barnets sammanfattning. Försök igen.')
         setSummary(null)
       } finally {
         if (isMounted) setIsLoadingSummary(false)
@@ -129,32 +129,32 @@ export default function HomePage() {
   if (isLoading) {
     return (
       <main style={{ maxWidth: 720, margin: '2rem auto', padding: '0 1rem' }}>
-        <h1>Home</h1>
-        <p>Loading…</p>
+        <h1>Hem</h1>
+        <p>Laddar…</p>
       </main>
     )
   }
 
   return (
     <main style={{ maxWidth: 720, margin: '2rem auto', padding: '0 1rem' }}>
-      <h1>Home</h1>
+      <h1>Hem</h1>
 
       <div style={{ marginBottom: '1rem' }}>
         <button type="button" onClick={() => navigate('/add-sale')}>
-          Add Sale
+          Registrera försäljning
         </button>
         <button type="button" onClick={() => navigate('/history')} style={{ marginLeft: '0.5rem' }}>
-          History
+          Historik
         </button>
       </div>
 
       {error ? <p style={{ color: 'crimson' }}>{error}</p> : null}
 
-      {campaign ? <p>Active campaign: {campaign.name}</p> : null}
+      {campaign ? <p>Aktiv kampanj: {campaign.name}</p> : null}
 
       {children.length > 1 ? (
         <label style={{ display: 'block', marginBottom: '1rem' }}>
-          Child
+          Barn
           <select
             value={selectedChildId}
             onChange={(e) => setSelectedChildId(e.target.value)}
@@ -169,18 +169,18 @@ export default function HomePage() {
         </label>
       ) : null}
 
-      {children.length === 1 ? <p>Child: {childShortName(children[0])}</p> : null}
+      {children.length === 1 ? <p>Barn: {childShortName(children[0])}</p> : null}
 
-      {isLoadingSummary ? <p>Loading summary…</p> : null}
+      {isLoadingSummary ? <p>Laddar sammanfattning…</p> : null}
 
       {summary && selectedChild ? (
         <section style={{ border: '1px solid #ddd', borderRadius: 8, padding: '1rem' }}>
           <h2 style={{ marginTop: 0 }}>{childShortName(selectedChild)}</h2>
           <p>
-            Sold: {summary.total_units_sold} / {summary.target_units} (Remaining:{' '}
+            Sålt: {summary.total_units_sold} / {summary.target_units} (Kvar:{' '}
             {summary.remaining_units_to_target})
           </p>
-          <p>Sales amount: {summary.total_sales_amount}</p>
+          <p>Försäljningsbelopp: {summary.total_sales_amount}</p>
           <progress
             value={Number(summary.progress_percent)}
             max={100}
@@ -190,7 +190,7 @@ export default function HomePage() {
         </section>
       ) : null}
 
-      {campaign && children.length === 0 ? <p>No children linked to this account.</p> : null}
+      {campaign && children.length === 0 ? <p>Inga barn kopplade till det här kontot.</p> : null}
     </main>
   )
 }

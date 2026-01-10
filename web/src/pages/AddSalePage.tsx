@@ -73,7 +73,7 @@ export default function AddSalePage() {
         if (productsRes.data.length > 0) setProductId(productsRes.data[0].id)
       } catch {
         if (!isMounted) return
-        setError('Failed to load campaign/products. Please try again.')
+        setError('Kunde inte hämta kampanj/produkter. Försök igen.')
       } finally {
         if (isMounted) setIsLoading(false)
       }
@@ -101,12 +101,12 @@ export default function AddSalePage() {
         is_delivered: isDelivered,
       })
 
-      setToast({ message: 'Sale saved.' })
+      setToast({ message: 'Försäljningen sparades.' })
       setTimeout(() => {
         navigate('/home', { replace: true })
       }, 600)
     } catch {
-      setError('Failed to save sale. Please check inputs and try again.')
+      setError('Kunde inte spara försäljningen. Kontrollera uppgifterna och försök igen.')
     } finally {
       setIsSubmitting(false)
     }
@@ -115,24 +115,24 @@ export default function AddSalePage() {
   if (isLoading) {
     return (
       <main style={{ maxWidth: 720, margin: '2rem auto', padding: '0 1rem' }}>
-        <h1>Add Sale</h1>
-        <p>Loading…</p>
+        <h1>Registrera försäljning</h1>
+        <p>Laddar…</p>
       </main>
     )
   }
 
   return (
     <main style={{ maxWidth: 720, margin: '2rem auto', padding: '0 1rem' }}>
-      <h1>Add Sale</h1>
+      <h1>Registrera försäljning</h1>
 
       {error ? <p style={{ color: 'crimson' }}>{error}</p> : null}
 
-      {campaign ? <p>Campaign: {campaign.name}</p> : null}
+      {campaign ? <p>Kampanj: {campaign.name}</p> : null}
 
       <form onSubmit={onSubmit}>
         <div style={{ display: 'grid', gap: '0.75rem' }}>
           <label>
-            Child
+            Barn
             <select value={childId} onChange={(e) => setChildId(e.target.value)} style={{ marginLeft: '0.5rem' }}>
               {children.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -143,7 +143,7 @@ export default function AddSalePage() {
           </label>
 
           <label>
-            Product
+            Produkt
             <select value={productId} onChange={(e) => setProductId(e.target.value)} style={{ marginLeft: '0.5rem' }}>
               {products.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -154,7 +154,7 @@ export default function AddSalePage() {
           </label>
 
           <label>
-            Quantity
+            Antal
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
               <button type="button" onClick={() => setQuantity((q) => Math.max(1, q - 1))}>
                 -
@@ -173,24 +173,24 @@ export default function AddSalePage() {
           </label>
 
           <label>
-            Buyer name (optional)
+            Köparens namn (valfritt)
             <input value={buyerName} onChange={(e) => setBuyerName(e.target.value)} style={{ width: '100%' }} />
           </label>
 
           <label>
-            <input type="checkbox" checked={isPaid} onChange={(e) => setIsPaid(e.target.checked)} /> Paid
+            <input type="checkbox" checked={isPaid} onChange={(e) => setIsPaid(e.target.checked)} /> Betald
           </label>
 
           <label>
-            <input type="checkbox" checked={isDelivered} onChange={(e) => setIsDelivered(e.target.checked)} /> Delivered
+            <input type="checkbox" checked={isDelivered} onChange={(e) => setIsDelivered(e.target.checked)} /> Levererad
           </label>
 
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <button type="button" onClick={() => navigate('/home')} disabled={isSubmitting}>
-              Cancel
+              Avbryt
             </button>
             <button type="submit" disabled={!canSubmit}>
-              {isSubmitting ? 'Saving…' : 'Save Sale'}
+              {isSubmitting ? 'Sparar…' : 'Spara'}
             </button>
           </div>
         </div>

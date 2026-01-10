@@ -38,7 +38,7 @@ export default function LoginPage() {
       setAccessToken(res.data.access_token)
       navigate('/home', { replace: true })
     } catch (err: unknown) {
-      setError('Invalid credentials or server error.')
+      setError('Felaktiga inloggningsuppgifter eller serverfel.')
     } finally {
       setIsSubmitting(false)
     }
@@ -46,11 +46,11 @@ export default function LoginPage() {
 
   return (
     <main style={{ maxWidth: 420, margin: '2rem auto', padding: '0 1rem' }}>
-      <h1>Log in</h1>
+      <h1>Logga in</h1>
       <form onSubmit={onSubmit}>
         <div style={{ display: 'grid', gap: '0.75rem' }}>
           <label>
-            Email
+            E-post
             <input
               type="email"
               value={email}
@@ -62,7 +62,7 @@ export default function LoginPage() {
           </label>
 
           <label>
-            Password
+            Lösenord
             <input
               type="password"
               value={password}
@@ -74,7 +74,7 @@ export default function LoginPage() {
           </label>
 
           <button type="submit" disabled={!canSubmit}>
-            {isSubmitting ? 'Logging in…' : 'Log in'}
+            {isSubmitting ? 'Loggar in…' : 'Logga in'}
           </button>
 
           {error ? <p style={{ color: 'crimson' }}>{error}</p> : null}

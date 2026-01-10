@@ -76,7 +76,7 @@ export default function CoachYearlyStatsPage() {
         if (!isMounted) return
 
         if (meRes.data.role !== 'coach') {
-          setError('Forbidden: coach access only.')
+          setError('Åtkomst nekad: endast coach.')
           setData(null)
           setSelectedChildId(null)
           return
@@ -97,12 +97,12 @@ export default function CoachYearlyStatsPage() {
           return
         }
         if (status === 403) {
-          setError('Forbidden: coach access only.')
+          setError('Åtkomst nekad: endast coach.')
           setData(null)
           setSelectedChildId(null)
           return
         }
-        setError('Failed to load yearly statistics. Please try again.')
+        setError('Kunde inte hämta årsstatistik. Försök igen.')
         setData(null)
         setSelectedChildId(null)
       } finally {
@@ -150,8 +150,8 @@ export default function CoachYearlyStatsPage() {
   if (isLoading) {
     return (
       <main style={{ maxWidth: 920, margin: '2rem auto', padding: '0 1rem' }}>
-        <h1>Yearly stats</h1>
-        <p>Loading…</p>
+        <h1>Årsstatistik</h1>
+        <p>Laddar…</p>
       </main>
     )
   }
@@ -159,9 +159,9 @@ export default function CoachYearlyStatsPage() {
   return (
     <main style={{ maxWidth: 920, margin: '2rem auto', padding: '0 1rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
-        <h1 style={{ marginTop: 0 }}>Yearly stats</h1>
+        <h1 style={{ marginTop: 0 }}>Årsstatistik</h1>
         <button type="button" onClick={() => navigate('/coach/dashboard')}>
-          Back
+          Tillbaka
         </button>
       </div>
 
@@ -169,7 +169,7 @@ export default function CoachYearlyStatsPage() {
 
       <section style={{ border: '1px solid #ddd', borderRadius: 8, padding: '1rem', marginBottom: '1rem' }}>
         <label>
-          Year
+          År
           <input
             type="number"
             value={year}
@@ -183,11 +183,11 @@ export default function CoachYearlyStatsPage() {
         {data ? (
           <div style={{ marginTop: '0.75rem' }}>
             <p style={{ margin: 0 }}>
-              Team: <strong>{data.team.name}</strong>
+              Lag: <strong>{data.team.name}</strong>
             </p>
             <p style={{ margin: 0 }}>
-              Totals: <strong>{data.total_units_sold}</strong> units,{' '}
-              <strong>{data.total_sales_amount}</strong> amount
+              Totalt: <strong>{data.total_units_sold}</strong> st,{' '}
+              <strong>{data.total_sales_amount}</strong> belopp
             </p>
           </div>
         ) : null}
@@ -195,34 +195,34 @@ export default function CoachYearlyStatsPage() {
 
       {data ? (
         <section style={{ textAlign: 'left' }}>
-          <h2>Children</h2>
+          <h2>Barn</h2>
 
           <div style={{ marginBottom: '0.5rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             <button type="button" onClick={() => toggleSort('name')}>
-              Sort: Name
+              Sortera: Namn
             </button>
             <button type="button" onClick={() => toggleSort('units')}>
-              Sort: Units
+              Sortera: Enheter
             </button>
             <button type="button" onClick={() => toggleSort('amount')}>
-              Sort: Amount
+              Sortera: Belopp
             </button>
             <button type="button" onClick={() => toggleSort('campaigns')}>
-              Sort: Campaigns
+              Sortera: Kampanjer
             </button>
           </div>
 
-          {sortedChildren.length === 0 ? <p>No sales recorded for this year.</p> : null}
+          {sortedChildren.length === 0 ? <p>Inga försäljningar registrerade för detta år.</p> : null}
 
           {sortedChildren.length > 0 ? (
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr>
-                    <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: '8px' }}>Child</th>
-                    <th style={{ textAlign: 'right', borderBottom: '1px solid #ddd', padding: '8px' }}>Units</th>
-                    <th style={{ textAlign: 'right', borderBottom: '1px solid #ddd', padding: '8px' }}>Amount</th>
-                    <th style={{ textAlign: 'right', borderBottom: '1px solid #ddd', padding: '8px' }}>Campaigns</th>
+                    <th style={{ textAlign: 'left', borderBottom: '1px solid #ddd', padding: '8px' }}>Barn</th>
+                    <th style={{ textAlign: 'right', borderBottom: '1px solid #ddd', padding: '8px' }}>Enheter</th>
+                    <th style={{ textAlign: 'right', borderBottom: '1px solid #ddd', padding: '8px' }}>Belopp</th>
+                    <th style={{ textAlign: 'right', borderBottom: '1px solid #ddd', padding: '8px' }}>Kampanjer</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -259,16 +259,16 @@ export default function CoachYearlyStatsPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
                 <h3 style={{ marginTop: 0, marginBottom: 0 }}>{selectedChild.name}</h3>
                 <button type="button" onClick={() => setSelectedChildId(null)}>
-                  Close
+                  Stäng
                 </button>
               </div>
 
               <p style={{ marginTop: 8, marginBottom: 12 }}>
-                Totals: {selectedChild.total_units_sold} units, {selectedChild.total_sales_amount} amount
+                Totalt: {selectedChild.total_units_sold} st, {selectedChild.total_sales_amount} belopp
               </p>
 
-              <h4 style={{ marginTop: 0 }}>Campaign breakdown</h4>
-              {selectedChild.campaigns.length === 0 ? <p>No campaigns.</p> : null}
+              <h4 style={{ marginTop: 0 }}>Kampanjfördelning</h4>
+              {selectedChild.campaigns.length === 0 ? <p>Inga kampanjer.</p> : null}
 
               {selectedChild.campaigns.length > 0 ? (
                 <div style={{ display: 'grid', gap: 10 }}>
@@ -279,9 +279,9 @@ export default function CoachYearlyStatsPage() {
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
                         <strong>{camp.campaign_name}</strong>
-                        <span>{camp.units_sold} units</span>
+                        <span>{camp.units_sold} st</span>
                       </div>
-                      <div style={{ marginTop: 6, fontSize: 14 }}>Amount: {camp.sales_amount}</div>
+                      <div style={{ marginTop: 6, fontSize: 14 }}>Belopp: {camp.sales_amount}</div>
                     </div>
                   ))}
                 </div>

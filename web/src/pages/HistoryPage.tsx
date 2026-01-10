@@ -65,7 +65,7 @@ export default function HistoryPage() {
           navigate('/login', { replace: true })
           return
         }
-        setError('Failed to load children. Please try again.')
+        setError('Kunde inte hämta barn. Försök igen.')
         setChildren([])
       } finally {
         if (isMounted) setIsLoadingChildren(false)
@@ -115,11 +115,11 @@ export default function HistoryPage() {
           return
         }
         if (status === 404) {
-          setError('Some yearly statistics could not be loaded for this year.')
+          setError('Viss årsstatistik kunde inte hämtas för detta år.')
           setStatsByChildId({})
           return
         }
-        setError('Failed to load yearly statistics. Please try again.')
+        setError('Kunde inte hämta årsstatistik. Försök igen.')
         setStatsByChildId({})
       } finally {
         if (isMounted) setIsLoadingStats(false)
@@ -135,8 +135,8 @@ export default function HistoryPage() {
   if (isLoadingChildren) {
     return (
       <main style={{ maxWidth: 720, margin: '2rem auto', padding: '0 1rem' }}>
-        <h1>History</h1>
-        <p>Loading…</p>
+        <h1>Historik</h1>
+        <p>Laddar…</p>
       </main>
     )
   }
@@ -144,9 +144,9 @@ export default function HistoryPage() {
   return (
     <main style={{ maxWidth: 720, margin: '2rem auto', padding: '0 1rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
-        <h1 style={{ marginTop: 0 }}>History</h1>
+        <h1 style={{ marginTop: 0 }}>Historik</h1>
         <button type="button" onClick={() => navigate('/home')}>
-          Back
+          Tillbaka
         </button>
       </div>
 
@@ -154,7 +154,7 @@ export default function HistoryPage() {
 
       <section style={{ border: '1px solid #ddd', borderRadius: 8, padding: '1rem', marginBottom: '1rem' }}>
         <label style={{ display: 'block' }}>
-          Year
+            År
           <input
             type="number"
             value={year}
@@ -166,9 +166,9 @@ export default function HistoryPage() {
         </label>
       </section>
 
-      {children.length === 0 ? <p>No children linked to this account.</p> : null}
+      {children.length === 0 ? <p>Inga barn kopplade till det här kontot.</p> : null}
 
-      {isLoadingStats ? <p>Loading yearly statistics…</p> : null}
+      {isLoadingStats ? <p>Laddar årsstatistik…</p> : null}
 
       <div style={{ display: 'grid', gap: '0.75rem' }}>
         {children.map((child) => {
@@ -181,14 +181,14 @@ export default function HistoryPage() {
               {stats ? (
                 <>
                   <p style={{ marginBottom: 6 }}>
-                    Total units sold: <strong>{stats.total_units_sold}</strong>
+                      Totalt sålda enheter: <strong>{stats.total_units_sold}</strong>
                   </p>
                   <p style={{ marginTop: 0, marginBottom: 12 }}>
-                    Total sales amount: <strong>{stats.total_sales_amount}</strong>
+                      Totalt försäljningsbelopp: <strong>{stats.total_sales_amount}</strong>
                   </p>
 
-                  <h3 style={{ margin: '0 0 0.5rem 0' }}>By campaign</h3>
-                  {stats.campaigns.length === 0 ? <p>No campaigns for this year.</p> : null}
+                    <h3 style={{ margin: '0 0 0.5rem 0' }}>Per kampanj</h3>
+                    {stats.campaigns.length === 0 ? <p>Inga kampanjer för detta år.</p> : null}
 
                   {stats.campaigns.length > 0 ? (
                     <div style={{ display: 'grid', gap: 10 }}>
@@ -203,10 +203,10 @@ export default function HistoryPage() {
                         >
                           <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem' }}>
                             <strong>{c.campaign_name}</strong>
-                            <span>{c.total_units_sold} units</span>
+                              <span>{c.total_units_sold} st</span>
                           </div>
                           <div style={{ marginTop: 6, fontSize: 14 }}>
-                            Sales amount: {c.total_sales_amount}
+                              Försäljningsbelopp: {c.total_sales_amount}
                           </div>
                         </div>
                       ))}
@@ -214,7 +214,7 @@ export default function HistoryPage() {
                   ) : null}
                 </>
               ) : (
-                <p style={{ marginBottom: 0 }}>No stats loaded for this child.</p>
+                  <p style={{ marginBottom: 0 }}>Ingen statistik hämtad för detta barn.</p>
               )}
             </section>
           )
